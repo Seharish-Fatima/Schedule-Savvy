@@ -1,15 +1,3 @@
-"""
-app.py
-
-ScheduleSavvy — Streamlit UI.
-
-Student uploads their university's timetable Excel file, enters their
-parent section and the courses they need (plus optional preferred
-teachers), and gets back a clash-free weekly schedule — color-coded to
-show why each section was chosen (parent section match, preferred teacher
-match, or best-available fallback).
-"""
-
 from __future__ import annotations
 
 import streamlit as st
@@ -23,10 +11,6 @@ from credits import (
 )
 from degrees import build_degree_course_map, sorted_degree_options, degree_display_name
 
-
-# ---------------------------------------------------------------------------
-# Page setup + design system
-# ---------------------------------------------------------------------------
 
 st.set_page_config(
     page_title="ScheduleSavvy",
@@ -62,7 +46,6 @@ _CUSTOM_CSS = """
         letter-spacing: -0.01em;
     }
 
-    /* Hero title */
     .ss-hero {
         padding: 2.5rem 0 1.5rem 0;
         border-bottom: 1px solid var(--ss-border);
@@ -87,7 +70,6 @@ _CUSTOM_CSS = """
         max-width: 640px;
     }
 
-    /* Section labels */
     .ss-label {
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.72rem;
@@ -98,7 +80,6 @@ _CUSTOM_CSS = """
         margin-bottom: 0.4rem;
     }
 
-    /* Legend chips */
     .ss-legend {
         display: flex;
         gap: 1.2rem;
@@ -120,7 +101,6 @@ _CUSTOM_CSS = """
         display: inline-block;
     }
 
-    /* Score banner */
     .ss-score-banner {
         background: var(--ss-surface);
         border: 1px solid var(--ss-border);
@@ -147,7 +127,6 @@ _CUSTOM_CSS = """
         letter-spacing: 0.06em;
     }
 
-    /* Timetable grid */
     .ss-grid-wrapper {
         overflow-x: auto;
         border-radius: 10px;
@@ -221,7 +200,6 @@ _CUSTOM_CSS = """
         margin-top: 0.1rem;
     }
 
-    /* Credit tracker */
     .ss-credit-bar-wrapper {
         background: var(--ss-surface);
         border: 1px solid var(--ss-border);
@@ -260,14 +238,6 @@ _CUSTOM_CSS = """
         font-style: italic;
     }
 
-    /* Fix multiselect dropdown scrolling with long option lists (100+
-       courses). Streamlit's MultiSelect component sets the dropdown's
-       Popover Body and DropdownContainer to overflow:hidden by design
-       (confirmed by inspecting the actual component source), capping
-       height at 70vh with no internal scroll — so long lists get
-       clipped instead of scrolling. Target the list portion specifically
-       (role="listbox", which BaseWeb always renders for the option list)
-       and force it to scroll internally instead. */
     [data-testid="stMultiSelect"] [role="listbox"] {
         max-height: 50vh !important;
         overflow-y: auto !important;
@@ -281,10 +251,6 @@ _CUSTOM_CSS = """
 
 st.markdown(_CUSTOM_CSS, unsafe_allow_html=True)
 
-
-# ---------------------------------------------------------------------------
-# Hero
-# ---------------------------------------------------------------------------
 
 st.markdown(
     """
@@ -301,19 +267,11 @@ st.markdown(
 )
 
 
-# ---------------------------------------------------------------------------
-# Session state
-# ---------------------------------------------------------------------------
-
 if "sessions" not in st.session_state:
     st.session_state.sessions = None
 if "available_courses" not in st.session_state:
     st.session_state.available_courses = []
 
-
-# ---------------------------------------------------------------------------
-# Step 1 — Upload
-# ---------------------------------------------------------------------------
 
 st.markdown('<p class="ss-label">Step 1 — Upload your timetable</p>', unsafe_allow_html=True)
 
@@ -341,10 +299,6 @@ if uploaded is not None:
             st.session_state.sessions = None
 
 
-# ---------------------------------------------------------------------------
-# Step 2 — Student input
-# ---------------------------------------------------------------------------
-
 if st.session_state.sessions:
     st.markdown('<p class="ss-label">Step 2 — Your details</p>', unsafe_allow_html=True)
 
@@ -360,11 +314,6 @@ if st.session_state.sessions:
         key="degree_prefix",
     )
 
-    # If the degree changed since the last run, the previous course
-    # selection may contain courses that don't exist for the new degree
-    # at all. Rather than let Streamlit's multiselect silently drop them
-    # (and rather than silently keeping a mismatched selection), clear it
-    # explicitly and let the student know why.
     if st.session_state.get("_last_degree") != degree_prefix:
         if st.session_state.get("_last_degree") is not None:
             st.session_state.course_picker = []
@@ -381,17 +330,8 @@ if st.session_state.sessions:
         )
 
     with col2:
-        # Only offer courses that actually have a section under the
-        # selected degree — built from the real timetable data, not a
-        # static catalogue, so it always matches what's schedulable.
         degree_course_codes = sorted(degree_course_map.get(degree_prefix, []))
 
-        # Deliberately NOT filtering further by remaining credit room —
-        # dynamically shrinking/growing a multiselect's options between
-        # reruns is what was causing already-picked courses to vanish.
-        # Instead: show everything for this degree, validate the credit
-        # total after the fact, and tell the student clearly if they're
-        # over the cap rather than fighting Streamlit's rerun model.
         courses_raw = st.multiselect(
             "Courses you need",
             options=degree_course_codes,
@@ -403,8 +343,6 @@ if st.session_state.sessions:
             ),
         )
 
-    # Expand the raw selection to include auto-added labs, and get the
-    # real credit total for what the student actually picked.
     courses, total_credits = resolve_selection(courses_raw, catalog)
     auto_added = [c for c in courses if c not in courses_raw]
 
@@ -463,10 +401,6 @@ if st.session_state.sessions:
         use_container_width=False,
         disabled=is_over_cap,
     )
-
-    # -----------------------------------------------------------------
-    # Step 3 — Result
-    # -----------------------------------------------------------------
 
     if generate:
         if not parent_section.strip():
@@ -527,13 +461,10 @@ if st.session_state.sessions:
                     unsafe_allow_html=True,
                 )
 
-                # Build day -> slot -> [(course_section_option)] lookup
                 days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
                 all_sessions = result.all_sessions()
                 slot_numbers = sorted(set(s.slot for s in all_sessions))
 
-                # session lookup: (day, slot) -> ClassSession, plus which
-                # SectionOption it belongs to (for styling)
                 session_to_option: dict[int, SectionOption] = {}
                 for opt in result.assignments.values():
                     for s in opt.sessions:

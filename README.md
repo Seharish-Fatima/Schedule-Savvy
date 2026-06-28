@@ -1,5 +1,7 @@
 # ScheduleSavvy 🗓️
 
+### Live: schedulesavvy.streamlit.app
+
 You know that special kind of pain when you open your university's timetable Excel sheet and it's just... a wall of text? Section codes, random spacing, a teacher's name crammed into a cell with zero warning? And you have to manually cross-check 6 courses across 5 days to make sure nothing overlaps, by hand, like it's 2003?
 
 Yeah. Never again. ScheduleSavvy reads the chaos for you and spits out a clash-free schedule in like 2 seconds.
@@ -54,7 +56,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Open the localhost link it gives you. That's it. That's the whole setup.
+Open the localhost link it gives you. Or just use the live deployment above — no setup, no install, just go.
 
 ## A real note on the source data (it's messier than you'd think)
 
@@ -79,6 +81,6 @@ Fix: stop fighting the framework. Show all courses always. Validate the total _a
 
 ## Status
 
-v1. Tested against a real FAST-NUCES Fall 2024 timetable — 1,485 parsed class sessions across all 5 weekdays and 8 degree programs, survived contact with real, messy, human-made data, and lived to tell the tale (see above).
+v1. Deployed and live. Tested against a real FAST-NUCES Fall 2024 timetable — 1,485 parsed class sessions across all 5 weekdays and 8 degree programs, survived contact with real, messy, human-made data, and lived to tell the tale (see above).
 
 Coming eventually (when I have the will to live again): support for other universities' timetable formats, and reading straight from a live Google Sheets link instead of needing a fresh upload every time.
