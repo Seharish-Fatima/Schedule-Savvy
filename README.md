@@ -1,6 +1,6 @@
 # ScheduleSavvy 🗓️
 
-### Live: schedulesavvy.streamlit.app
+##### Live: [schedulesavvy.streamlit.app](https://schedulesavvy.streamlit.app/)
 
 You know that special kind of pain when you open your university's timetable Excel sheet and it's just... a wall of text? Section codes, random spacing, a teacher's name crammed into a cell with zero warning? And you have to manually cross-check 6 courses across 5 days to make sure nothing overlaps, by hand, like it's 2003?
 
