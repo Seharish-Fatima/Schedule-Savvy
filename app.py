@@ -273,30 +273,65 @@ if "available_courses" not in st.session_state:
     st.session_state.available_courses = []
 
 
-st.markdown('<p class="ss-label">Step 1 — Upload your timetable</p>', unsafe_allow_html=True)
+st.markdown('<p class="ss-label">Step 1 — Timetable</p>', unsafe_allow_html=True)
 
-uploaded = st.file_uploader(
-    "Upload the official Excel timetable for your university",
-    type=["xlsx"],
+timetable_source = st.radio(
+    "Timetable source",
+    options=["Use FAST-NUCES sample timetable", "Upload your own timetable"],
+    horizontal=True,
     label_visibility="collapsed",
+    key="timetable_source",
 )
 
-if uploaded is not None:
-    with st.spinner("Reading timetable..."):
-        with open("_uploaded_timetable.xlsx", "wb") as f:
-            f.write(uploaded.getvalue())
-        try:
-            sessions, flagged = parse_timetable("_uploaded_timetable.xlsx")
-            st.session_state.sessions = sessions
-            st.session_state.available_courses = sorted(set(s.course for s in sessions))
-            if flagged:
-                st.warning(
-                    f"{len(flagged)} cell(s) in the timetable couldn't be read with confidence "
-                    "and were skipped. Your schedule may be missing those specific sections."
-                )
-        except Exception as e:
-            st.error(f"Couldn't read that file: {e}")
-            st.session_state.sessions = None
+if st.session_state.get("_last_timetable_source") != timetable_source:
+    st.session_state.sessions = None
+    st.session_state.available_courses = []
+    st.session_state._last_timetable_source = timetable_source
+
+if timetable_source == "Use FAST-NUCES sample timetable":
+    st.markdown(
+        '<p style="color:#94A3B8; font-size:0.85rem; margin:0.3rem 0 0.8rem 0;">'
+        "FAST-NUCES Karachi Campus — Fall 2024 timetable. All 8 degree programs, "
+        "1,485 class sessions across 5 weekdays.</p>",
+        unsafe_allow_html=True,
+    )
+    if st.session_state.sessions is None:
+        with st.spinner("Loading timetable..."):
+            try:
+                sessions, flagged = parse_timetable("timetable.xlsx")
+                st.session_state.sessions = sessions
+                st.session_state.available_courses = sorted(set(s.course for s in sessions))
+                if flagged:
+                    st.warning(
+                        f"{len(flagged)} cell(s) couldn't be read with confidence and were skipped."
+                    )
+            except Exception as e:
+                st.error(f"Couldn't load sample timetable: {e}")
+                st.session_state.sessions = None
+else:
+    uploaded = st.file_uploader(
+        "Upload the official Excel timetable for your university",
+        type=["xlsx"],
+        label_visibility="collapsed",
+    )
+    if uploaded is not None:
+        with st.spinner("Reading timetable..."):
+            with open("_uploaded_timetable.xlsx", "wb") as f:
+                f.write(uploaded.getvalue())
+            try:
+                sessions, flagged = parse_timetable("_uploaded_timetable.xlsx")
+                st.session_state.sessions = sessions
+                st.session_state.available_courses = sorted(set(s.course for s in sessions))
+                if flagged:
+                    st.warning(
+                        f"{len(flagged)} cell(s) in the timetable couldn't be read with confidence "
+                        "and were skipped. Your schedule may be missing those specific sections."
+                    )
+            except Exception as e:
+                st.error(f"Couldn't read that file: {e}")
+                st.session_state.sessions = None
+    else:
+        st.session_state.sessions = None
 
 
 if st.session_state.sessions:
