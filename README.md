@@ -8,7 +8,7 @@ Yeah. Never again. ScheduleSavvy reads the chaos for you and spits out a clash-f
 
 ## What it actually does (no cap)
 
-Pick your degree program. Upload your university's official timetable. Tell it your parent section, the courses you're taking, and (if you're feeling picky) which teacher you'd prefer. It does the rest:
+Pick your degree program. Use the included FAST-NUCES sample timetable or upload your own. Tell it your parent section, the courses you're taking, and (if you're feeling picky) which teacher you'd prefer. It does the rest:
 
 - Only shows you courses your degree can actually take — no scrolling past 80 courses that aren't even yours
 - Tries to keep you in your home section first, because nobody wants to be the one random kid from a different section in every single class
@@ -81,6 +81,6 @@ Fix: stop fighting the framework. Show all courses always. Validate the total _a
 
 ## Status
 
-v1. Deployed and live. Tested against a real FAST-NUCES Fall 2024 timetable — 1,485 parsed class sessions across all 5 weekdays and 8 degree programs, survived contact with real, messy, human-made data, and lived to tell the tale (see above).
+v1. Deployed and live. Loads the FAST-NUCES Fall 2024 timetable automatically — no upload required, works right out of the box. 1,485 parsed class sessions across all 5 weekdays and 8 degree programs, survived contact with real, messy, human-made data, and lived to tell the tale (see above).
 
 Coming eventually (when I have the will to live again): support for other universities' timetable formats, and reading straight from a live Google Sheets link instead of needing a fresh upload every time.
